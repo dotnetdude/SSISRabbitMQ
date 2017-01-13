@@ -1,0 +1,260 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="1/13/2017 1:28:49 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="ANOTHERVM"
+  DTS:CreatorName="ANOTHERVM\suresh2"
+  DTS:DTSID="{127E636A-8DDA-4286-90DE-0B9702FB7BF7}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Package"
+  DTS:PackageType="5"
+  DTS:VersionBuild="7"
+  DTS:VersionGUID="{FD2EF7BE-E2A9-4497-BFBD-99851240E52E}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[RabbitMQ Connection Manager]"
+      DTS:CreationName="RABBITMQ"
+      DTS:DTSID="{67402885-DBAD-4A7D-A0E1-CFA5084F2052}"
+      DTS:ObjectName="RabbitMQ Connection Manager">
+      <DTS:ObjectData>
+        <InnerObject>
+          <HostName
+            Type="8"
+            Value="docker22" />
+          <Password
+            Type="8"
+            Value="guest" />
+          <Port
+            Type="3"
+            Value="5672" />
+          <TargetServerVersion
+            Type="3"
+            Value="130" />
+          <UserName
+            Type="8"
+            Value="guest" />
+          <VirtualHost
+            Type="8"
+            Value="/" />
+        </InnerObject>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Data Flow Task"
+      DTS:CreationName="Microsoft.Pipeline"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{6DD98E69-F71B-46BB-92F5-FEC757026F2F}"
+      DTS:ExecutableType="Microsoft.Pipeline"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Data Flow Task">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <pipeline
+          version="1">
+          <components>
+            <component
+              refId="Package\Data Flow Task\RabbitMQ Source"
+              componentClassID="Microsoft.ManagedComponentHost"
+              description="Connection source for RabbitMQ"
+              name="RabbitMQ Source">
+              <properties>
+                <property
+                  dataType="System.String"
+                  description="The name of the RabbitMQ queue to read messages from"
+                  name="QueueName">TestQueue</property>
+                <property
+                  dataType="System.String"
+                  name="UserComponentTypeName">SSISRabbitMQ.RabbitMQSource.RabbitMQSource, SSISRabbitMQ.RabbitMQSource, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ac1c316408dd3955</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Data Flow Task\RabbitMQ Source.Connections[RabbitMQ]"
+                  connectionManagerID="Package.ConnectionManagers[RabbitMQ Connection Manager]"
+                  connectionManagerRefId="Package.ConnectionManagers[RabbitMQ Connection Manager]"
+                  name="RabbitMQ" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output]"
+                  name="Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[MessageContents]"
+                      dataType="wstr"
+                      length="4000"
+                      lineageId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[MessageContents]"
+                      name="MessageContents" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[RoutingKey]"
+                      dataType="wstr"
+                      length="100"
+                      lineageId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[RoutingKey]"
+                      name="RoutingKey" />
+                  </outputColumns>
+                  <externalMetadataColumns>
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].ExternalColumns[7]"
+                      dataType="empty"
+                      name="" />
+                    <externalMetadataColumn
+                      refId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].ExternalColumns[9]"
+                      dataType="empty"
+                      name="" />
+                  </externalMetadataColumns>
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Data Flow Task\Union All"
+              componentClassID="Microsoft.UnionAll"
+              contactInfo="Union All;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;1"
+              description="Combines rows from multiple data flows without sorting. For example, add rows back to a data flow after correction of errors. If sorting is important, we recommend using the Merge transformation."
+              name="Union All"
+              version="1">
+              <inputs>
+                <input
+                  refId="Package\Data Flow Task\Union All.Inputs[Union All Input 1]"
+                  name="Union All Input 1">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Union All.Inputs[Union All Input 1].Columns[MessageContents]"
+                      cachedDataType="wstr"
+                      cachedLength="4000"
+                      cachedName="MessageContents"
+                      lineageId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[MessageContents]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[MessageContents]}</property>
+                      </properties>
+                    </inputColumn>
+                    <inputColumn
+                      refId="Package\Data Flow Task\Union All.Inputs[Union All Input 1].Columns[RoutingKey]"
+                      cachedDataType="wstr"
+                      cachedLength="100"
+                      cachedName="RoutingKey"
+                      lineageId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output].Columns[RoutingKey]">
+                      <properties>
+                        <property
+                          containsID="true"
+                          dataType="System.Int32"
+                          description="Output column lineage ID"
+                          name="OutputColumnLineageID">#{Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[RoutingKey]}</property>
+                      </properties>
+                    </inputColumn>
+                  </inputColumns>
+                  <externalMetadataColumns />
+                </input>
+                <input
+                  refId="Package\Data Flow Task\Union All.Inputs[Union All Input 2]"
+                  dangling="true"
+                  hasSideEffects="true"
+                  name="Union All Input 2">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Data Flow Task\Union All.Outputs[Union All Output 1]"
+                  name="Union All Output 1">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[MessageContents]"
+                      dataType="wstr"
+                      length="4000"
+                      lineageId="Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[MessageContents]"
+                      name="MessageContents" />
+                    <outputColumn
+                      refId="Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[RoutingKey]"
+                      dataType="wstr"
+                      length="100"
+                      lineageId="Package\Data Flow Task\Union All.Outputs[Union All Output 1].Columns[RoutingKey]"
+                      name="RoutingKey" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Data Flow Task.Paths[Output]"
+              endId="Package\Data Flow Task\Union All.Inputs[Union All Input 1]"
+              name="Output"
+              startId="Package\Data Flow Task\RabbitMQ Source.Outputs[Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="155,42"
+          Id="Package\Data Flow Task"
+          TopLeft="5.5,5.5" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+  <TaskHost
+    design-time-name="Package\Data Flow Task">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
+        <NodeLayout
+          Size="166,42"
+          Id="Package\Data Flow Task\RabbitMQ Source"
+          TopLeft="399,111" />
+        <NodeLayout
+          Size="123,42"
+          Id="Package\Data Flow Task\Union All"
+          TopLeft="421,192" />
+        <EdgeLayout
+          Id="Package\Data Flow Task.Paths[Output]"
+          TopLeft="482.25,153">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,39"
+              Start="0,0"
+              End="0,31.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,31.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <mssgm:EdgeLabel
+              BoundingBox="-8,7.75,16,16"
+              RelativePosition="Any" />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </TaskHost>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
